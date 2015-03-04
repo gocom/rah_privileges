@@ -172,7 +172,7 @@ function rah_privileges_input()
 
         if (isset($mergedpermissions[$resource])) {
             $groups = $mergedpermissions[$resource];
-        } else if ($groups !== null) {
+        } elseif ($groups !== null) {
             $groups = explode(',', (string) $groups);
         }
 
