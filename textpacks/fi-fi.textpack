@@ -1,0 +1,4 @@
+#@admin
+#@language fi-fi
+rah_privs => Käyttöoikeudet
+rah_privileges_privs => Rastita käyttäjätasot joilla tulisi olla oikeudet toimintoon

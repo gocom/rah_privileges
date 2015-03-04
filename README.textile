@@ -1,0 +1,23 @@
+h1. rah_privileges
+
+"Download":https://github.com/gocom/rah_privileges/releases | "Packagist":https://packagist.org/packages/rah/rah_privileges | "Donate":http://rahforum.biz/donate/rah_privileges
+
+Configure admin-side user-group permissions from Textpattern's Preferences panel.
+
+h2. Install
+
+Using "Composer":http://getcomposer.org:
+
+bc. $ composer require rah/rah_privileges:*
+
+Or "download":https://github.com/gocom/rah_privileges/releases a plugin package.
+
+h2. Toolshed notice
+
+This is a toolshed project. Experimental and not part of the main supported product line of Rah.
+
+h2. Changelog
+
+h3. 0.1.0 - upcoming
+
+* Initial release.
