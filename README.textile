@@ -23,6 +23,6 @@ This is a toolshed project. Experimental and not part of the main supported prod
 
 h2. Changelog
 
-h3. 0.1.0 - upcoming
+h3. Version 0.1.0 - upcoming
 
 * Initial release.
