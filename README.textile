@@ -23,6 +23,10 @@ This is a toolshed project. Experimental and not part of the main supported prod
 
 h2. Changelog
 
+h3. Version 0.1.1 - upcoming
+
+* Doesn't unnecessarily load the plugin on non-admin pages.
+
 h3. Version 0.1.0 - 2015/03/04
 
 * Initial release.
