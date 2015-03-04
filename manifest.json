@@ -1,7 +1,7 @@
 {
     "name": "rah_privileges",
     "description": "Configure admin-side user-group privileges",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": 4,
     "author": "Jukka Svahn",
     "author_uri": "http://rahforum.biz",
