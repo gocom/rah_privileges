@@ -59,7 +59,7 @@ class Rah_Privileges
 
     public function uninstall()
     {
-        safe_delete('txp_prefs', "name like 'rah\_privileges\_'");
+        safe_delete('txp_prefs', "name like 'rah\_privileges\_%'");
     }
 
     /**
@@ -136,14 +136,14 @@ function rah_privileges_input()
     unset($levels[0]);
 
     $labels = array_keys($permissions);
-    $panels = array_flip($labels);
+    $panels = array_combine(array_values($labels), array_fill(0, count($labels), 1));
     $labels = array_combine($labels, $labels);
 
     foreach (areas() as $area => $events) {
         foreach ($events as $title => $event) {
             if (array_key_exists($event, $labels)) {
                 $labels[$event] = $title;
-                $panels[$event] = -1;
+                $panels[$event] = 0;
             }
         }
     }
