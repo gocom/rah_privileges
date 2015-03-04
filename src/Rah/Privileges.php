@@ -68,7 +68,7 @@ class Rah_Privileges
 
     public function mergePrivileges()
     {
-        global $txp_permissions;
+        global $txp_permissions, $event;
 
         if (!get_pref('rah_privileges_privs')) {
             return;
@@ -78,6 +78,13 @@ class Rah_Privileges
 
         if (!is_array($privs)) {
             return;
+        }
+
+        if ($event === 'prefs') {
+            unset(
+                $privs['prefs'],
+                $privs['prefs.rah_privileges']
+            );
         }
 
         foreach ($privs as $resource => $groups) {
@@ -129,7 +136,7 @@ function rah_privileges_input()
     global $txp_permissions, $plugin_areas;
 
     $permissions = $txp_permissions;
-    $out = $panels = array();
+    $mergedpermissions = $out = $panels = array();
     $index = 0;
     $levels = get_groups();
 
@@ -138,6 +145,10 @@ function rah_privileges_input()
     $labels = array_keys($permissions);
     $panels = array_combine(array_values($labels), array_fill(0, count($labels), 1));
     $labels = array_combine($labels, $labels);
+
+    if (get_pref('rah_privileges_privs')) {
+        $mergedpermissions = json_decode(get_pref('rah_privileges_privs'), true);
+    }
 
     foreach (areas() as $area => $events) {
         foreach ($events as $title => $event) {
@@ -159,7 +170,9 @@ function rah_privileges_input()
 
         $out[] = tag($labels[$resource], 'strong').br;
 
-        if ($groups !== null) {
+        if (isset($mergedpermissions[$resource])) {
+            $groups = $mergedpermissions[$resource];
+        } else if ($groups !== null) {
             $groups = explode(',', (string) $groups);
         }
 
