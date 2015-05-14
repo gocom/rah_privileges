@@ -83,7 +83,7 @@ class Rah_Privileges
         if ($event === 'prefs') {
             unset(
                 $privs['prefs'],
-                $privs['prefs.rah_privileges']
+                $privs['prefs.rah_privs']
             );
         }
 
