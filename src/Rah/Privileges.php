@@ -35,7 +35,7 @@ class Rah_Privileges
 
     public function __construct()
     {
-        add_privs('prefs.rah_privileges', '1');
+        add_privs('prefs.rah_privs', '1');
         register_callback(array($this, 'install'), 'plugin_lifecycle.rah_privileges', 'installed');
         register_callback(array($this, 'uninstall'), 'plugin_lifecycle.rah_privileges', 'deleted');
         register_callback(array($this, 'savePrefs'), 'prefs', '', 1);
