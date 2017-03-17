@@ -35,22 +35,17 @@ class Rah_Privileges
 
     public function __construct()
     {
+        global $event;
+
         add_privs('prefs.rah_privs', '1');
-        register_callback(array($this, 'install'), 'plugin_lifecycle.rah_privileges', 'installed');
         register_callback(array($this, 'uninstall'), 'plugin_lifecycle.rah_privileges', 'deleted');
-        register_callback(array($this, 'savePrefs'), 'prefs', '', 1);
-        $this->mergePrivileges();
-    }
+        register_callback(array($this, 'addLocalization'), 'prefs', '', 1);
 
-    /**
-     * Installer.
-     */
-
-    public function install()
-    {
-        if (get_pref('rah_privileges_privs', false) === false) {
-            set_pref('rah_privileges_privs', '', 'rah_privs', PREF_ADVANCED, 'rah_privileges_input', 80);
+        if ($event === 'prefs') {
+            $this->syncPrefs();
         }
+
+        $this->mergePrivileges();
     }
 
     /**
@@ -63,65 +58,107 @@ class Rah_Privileges
     }
 
     /**
-     * Merges privileges table with our overwrites.
+     * Syncs preference fields.
+     *
+     * Creates preference keys for each permission resource. This
+     * is how we get the fields to show up in the interface.
      */
 
-    public function mergePrivileges()
+    public function syncPrefs()
     {
-        global $txp_permissions, $event;
+        global $textarray, $txp_permissions;
 
-        if (!get_pref('rah_privileges_privs')) {
-            return;
-        }
+        $active = array();
 
-        $privs = json_decode(get_pref('rah_privileges_privs'), true);
+        // Create a preferences string for every privilege that exists.
 
-        if (!is_array($privs)) {
-            return;
-        }
+        foreach ($txp_permissions as $resource => $privs) {
+            $name = 'rah_privileges_' . md5($resource);
+            $textarray[$name] = $resource;
 
-        if ($event === 'prefs') {
-            unset(
-                $privs['prefs'],
-                $privs['prefs.rah_privs']
-            );
-        }
+            // Add panel name infront of the list.
+            $privs = do_list($privs);
+            array_unshift($privs, $resource);
+            $privs = implode(', ', $privs);
 
-        foreach ($privs as $resource => $groups) {
-            if (!$groups) {
-                $txp_permissions[$resource] = null;
-            } else {
-                $txp_permissions[$resource] = implode(',', (array) $groups);
+            if (get_pref($name, false) === false) {
+                set_pref($name, $privs, 'rah_privs', PREF_PLUGIN, 'rah_privileges_input', 80);
             }
+
+            $active[] = $name;
+        }
+
+        // Remove privileges that no longer exist.
+
+        if ($active) {
+            $active = implode(',', quote_list((array) $active));
+
+            safe_delete(
+                'txp_prefs',
+                "name like 'rah\_privileges\_%' and name not in({$active})"
+            );
         }
     }
 
     /**
-     * Saves privileges configuration.
+     * Add panel titles into the translation array as pref labels.
      */
 
-    public function savePrefs()
-    {
-        global $prefs;
+    public function addLocalization() {
+        global $textarray;
 
-        if (!isset($_POST['rah_privileges_resource_0'])) {
-            return;
-        }
+        $resources = array();
 
-        $data = array();
-
-        foreach ($_POST as $name => $value) {
-            if (strpos($name, 'rah_privileges_resource_') === 0) {
-                $index = substr($name, strlen('rah_privileges_resource_'));
-                $groups = ps('rah_privileges_groups_'.$index);
-                $resource = (string) ps($name);
-                $data[$resource] = $groups;
-                unset($_POST['rah_privileges_groups_'.$index], $_POST[$name]);
+        foreach (areas() as $area => $events) {
+            foreach ($events as $title => $resource) {
+                $name = 'rah_privileges_' . md5($resource);
+                $textarray[$name] = $title;
             }
         }
 
-        $prefs['rah_privileges_privs'] = $_POST['rah_privileges_privs'] = json_encode($data);
-        $this->mergePrivileges();
+        // Update field sorting index.
+
+        foreach ($textarray as $name => $string) {
+            if (strpos($name, 'rah_privileges_') === 0) {
+                $resources[$name] = $string;
+            }
+        }
+
+        $index = 1;
+        asort($resources);
+
+        foreach ($resources as $name => $resource) {
+            update_pref($name, null, null, null, null, $index++);
+        }
+    }
+
+    /**
+     * Merges permissions table with our overwrites.
+     */
+
+    public function mergePrivileges()
+    {
+        global $prefs, $txp_permissions, $event;
+
+        foreach ($prefs as $name => $value) {
+            if (strpos($name, 'rah_privileges_') !== 0) {
+                continue;
+            }
+
+            $groups = do_list($value);
+            $resource = array_shift($groups);
+            $groups = implode(',', $groups);
+
+            if ($event === 'prefs' && strpos($resource, 'prefs') === 0) {
+                continue;
+            }
+
+            if (!$groups) {
+                $txp_permissions[$resource] = null;
+            } else {
+                $txp_permissions[$resource] = $groups;
+            }
+        }
     }
 }
 
@@ -131,68 +168,40 @@ class Rah_Privileges
  * @return string HTML widget
  */
 
-function rah_privileges_input()
+function rah_privileges_input($name, $value)
 {
     global $txp_permissions, $plugin_areas;
 
-    $permissions = $txp_permissions;
-    $mergedpermissions = $out = $panels = array();
-    $index = 0;
+    $field = $name . '[]';
     $levels = get_groups();
+    $groups = do_list($value);
+    $resource = array_shift($groups);
+    $out = array();
 
     unset($levels[0]);
+    $out[] = hInput($field, $resource);
 
-    $labels = array_keys($permissions);
-    $panels = array_combine(array_values($labels), array_fill(0, count($labels), 1));
-    $labels = array_combine($labels, $labels);
+    foreach ($levels as $group => $label) {
+        $id = $name . '_' . intval($group);
+        $checked = in_array($group, $groups);
 
-    if (get_pref('rah_privileges_privs')) {
-        $mergedpermissions = json_decode(get_pref('rah_privileges_privs'), true);
-    }
-
-    foreach (areas() as $area => $events) {
-        foreach ($events as $title => $event) {
-            if (array_key_exists($event, $labels)) {
-                $labels[$event] = $title;
-                $panels[$event] = 0;
-            }
-        }
-    }
-
-    array_multisort($panels, SORT_ASC, SORT_NUMERIC, $labels, SORT_ASC, SORT_STRING, $permissions);
-
-    foreach ($permissions as $resource => $groups) {
-        $out[] = hInput('rah_privileges_resource_'.$index, $resource);
-
-        if ($index !== 0) {
-            $out[] = br.br;
-        }
-
-        $out[] = tag($labels[$resource], 'strong').br;
-
-        if (isset($mergedpermissions[$resource])) {
-            $groups = $mergedpermissions[$resource];
-        } elseif ($groups !== null) {
-            $groups = explode(',', (string) $groups);
-        }
-
-        foreach ($levels as $group => $label) {
-            $checked = is_array($groups) && in_array($group, $groups);
-            $name = 'rah_privileges_groups_'.$index.'[]';
-            $id = 'rah_privileges_groups_'.$index.'_'.intval($group);
-
-            $out[] = checkbox(
-                $name,
+        $out[] = tag(
+            checkbox(
+                $field,
                 $group,
                 $checked,
                 '',
                 $id
-            );
+            ) . ' ' .
 
-            $out[] = '<label for="'.$id.'">'.$label.'</label>';
-        }
+            tag($label, 'label', array('for' => $id)),
 
-        $index++;
+            'span',
+
+            array(
+                'style' => 'white-space: nowrap',
+            )
+        ). ' ';
     }
 
     return implode('', $out);
