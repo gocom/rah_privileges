@@ -1,3 +1,2 @@
 #@admin
 rah_privs => Privileges
-rah_privileges_privs => Check account-levels that should have access to the action or panel
