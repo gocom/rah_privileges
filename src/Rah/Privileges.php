@@ -4,7 +4,7 @@
  * rah_privileges - Configure admin-side privileges
  * https://github.com/gocom/rah_privileges
  *
- * Copyright (C) 2015 Jukka Svahn
+ * Copyright (C) 2019 Jukka Svahn
  *
  * This file is part of rah_privileges.
  *
@@ -26,13 +26,11 @@
  *
  * @internal
  */
-
-class Rah_Privileges
+final class Rah_Privileges
 {
     /**
      * Constructor.
      */
-
     public function __construct()
     {
         global $event;
@@ -51,7 +49,6 @@ class Rah_Privileges
     /**
      * Uninstaller.
      */
-
     public function uninstall()
     {
         safe_delete('txp_prefs', "name like 'rah\_privileges\_%'");
@@ -63,12 +60,11 @@ class Rah_Privileges
      * Creates preference keys for each permission resource. This
      * is how we get the fields to show up in the interface.
      */
-
     public function syncPrefs()
     {
         global $textarray, $txp_permissions;
 
-        $active = array();
+        $active = [];
 
         // Create a preferences string for every privilege that exists.
 
@@ -103,11 +99,11 @@ class Rah_Privileges
     /**
      * Add panel titles into the translation array as pref labels.
      */
-
-    public function addLocalization() {
+    public function addLocalization()
+    {
         global $textarray;
 
-        $resources = array();
+        $resources = [];
 
         foreach (areas() as $area => $events) {
             foreach ($events as $title => $resource) {
@@ -135,7 +131,6 @@ class Rah_Privileges
     /**
      * Merges permissions table with our overwrites.
      */
-
     public function mergePrivileges()
     {
         global $prefs, $txp_permissions, $event;
@@ -161,50 +156,3 @@ class Rah_Privileges
         }
     }
 }
-
-/**
- * Renders input for setting privilege settings.
- *
- * @return string HTML widget
- */
-
-function rah_privileges_input($name, $value)
-{
-    global $txp_permissions, $plugin_areas;
-
-    $field = $name . '[]';
-    $levels = get_groups();
-    $groups = do_list($value);
-    $resource = array_shift($groups);
-    $out = array();
-
-    unset($levels[0]);
-    $out[] = hInput($field, $resource);
-
-    foreach ($levels as $group => $label) {
-        $id = $name . '_' . intval($group);
-        $checked = in_array($group, $groups);
-
-        $out[] = tag(
-            checkbox(
-                $field,
-                $group,
-                $checked,
-                '',
-                $id
-            ) . ' ' .
-
-            tag($label, 'label', array('for' => $id)),
-
-            'span',
-
-            array(
-                'style' => 'white-space: nowrap',
-            )
-        ). ' ';
-    }
-
-    return implode('', $out);
-}
-
-new Rah_Privileges();
