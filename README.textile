@@ -1,12 +1,12 @@
 h1. rah_privileges
 
-"Download":https://github.com/gocom/rah_privileges/releases | "Packagist":https://packagist.org/packages/rah/rah_privileges | "Donate":http://rahforum.biz/donate/rah_privileges
+"Download":https://github.com/gocom/rah_privileges/releases | "Packagist":https://packagist.org/packages/rah/rah_privileges | "Donate":https://rahforum.biz/donate/rah_privileges
 
 Configure admin-side user-group permissions from Textpattern's Advanced Preferences panel.
 
 h2. Install
 
-Using "Composer":http://getcomposer.org:
+Using "Composer":https://getcomposer.org:
 
 bc. $ composer require rah/rah_privileges:*
 
