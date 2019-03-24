@@ -1,6 +1,6 @@
 h1. rah_privileges
 
-"Download":https://github.com/gocom/rah_privileges/releases | "Packagist":https://packagist.org/packages/rah/rah_privileges | "Donate":https://rahforum.biz/donate/rah_privileges
+"Packagist":https://packagist.org/packages/rah/rah_privileges | "Donate":https://rahforum.biz/donate/rah_privileges
 
 Configure admin-side user-group permissions from "Textpattern CMS'":https://textpattern.com preferences panel.
 
