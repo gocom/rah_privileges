@@ -21,7 +21,7 @@ This is a toolshed project. Experimental and not part of the main supported prod
 
 h2. Changelog
 
-h3. Version 0.2.0 - upcoming
+h3. Version 0.2.0 - 2019/03/24
 
 * Fixed: Textpattern 4.7.x compatibility.
 * Added: Pref panel layout fits better Textpattern 4.7.0 panes.
