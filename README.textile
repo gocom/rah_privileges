@@ -10,8 +10,6 @@ Using "Composer":https://getcomposer.org:
 
 bc. $ composer require rah/rah_privileges
 
-Or "download":https://github.com/gocom/rah_privileges/releases a plugin package.
-
 h2. Requirements
 
 * Textpattern 4.7.0 or newer.
