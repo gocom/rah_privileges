@@ -8,7 +8,7 @@ h2. Install
 
 Using "Composer":https://getcomposer.org:
 
-bc. $ composer require rah/rah_privileges:*
+bc. $ composer require rah/rah_privileges
 
 Or "download":https://github.com/gocom/rah_privileges/releases a plugin package.
 
