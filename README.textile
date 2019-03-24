@@ -14,8 +14,8 @@ Or "download":https://github.com/gocom/rah_privileges/releases a plugin package.
 
 h2. Requirements
 
-* Textpattern 4.6.0 or newer.
-* PHP 5.3.0 or newer.
+* Textpattern 4.7.0 or newer.
+* PHP 5.6.0 or newer.
 
 h2. Toolshed notice
 
