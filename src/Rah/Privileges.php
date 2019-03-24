@@ -18,7 +18,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with hpw_admincss. If not, see <http://www.gnu.org/licenses/>.
+ * along with rah_privileges. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -62,15 +62,15 @@ final class Rah_Privileges
      */
     public function syncPrefs()
     {
-        global $textarray, $txp_permissions;
+        global $txp_permissions;
 
         $active = [];
+        $strings = [];
 
         // Create a preferences string for every privilege that exists.
-
         foreach ($txp_permissions as $resource => $privs) {
             $name = 'rah_privileges_' . md5($resource);
-            $textarray[$name] = $resource;
+            $strings[$name] = $resource;
 
             // Add panel name infront of the list.
             $privs = do_list($privs);
@@ -84,8 +84,9 @@ final class Rah_Privileges
             $active[] = $name;
         }
 
-        // Remove privileges that no longer exist.
+        Txp::get('\Textpattern\L10n\Lang')->setPack($strings, true);
 
+        // Remove privileges that no longer exist.
         if ($active) {
             $active = implode(',', quote_list((array) $active));
 
@@ -101,20 +102,29 @@ final class Rah_Privileges
      */
     public function addLocalization()
     {
-        global $textarray;
-
-        $resources = [];
+        // Load user group labels.
+        $strings = Txp::get('\Textpattern\L10n\Lang')->extract($this->getLanguageCode(), 'admin');
 
         foreach (areas() as $area => $events) {
             foreach ($events as $title => $resource) {
                 $name = 'rah_privileges_' . md5($resource);
-                $textarray[$name] = $title;
+                $strings[$name] = $title;
             }
         }
 
-        // Update field sorting index.
+        Txp::get('\Textpattern\L10n\Lang')->setPack($strings, true);
 
-        foreach ($textarray as $name => $string) {
+        $this->sort();
+    }
+
+    /**
+     * Update preference field sorting order.
+     */
+    private function sort()
+    {
+        $resources = [];
+
+        foreach (Txp::get('\Textpattern\L10n\Lang')->getStrings() as $name => $string) {
             if (strpos($name, 'rah_privileges_') === 0) {
                 $resources[$name] = $string;
             }
@@ -126,6 +136,16 @@ final class Rah_Privileges
         foreach ($resources as $name => $resource) {
             update_pref($name, null, null, null, null, $index++);
         }
+    }
+
+    /**
+     * Get the current language code.
+     *
+     * @return string
+     */
+    private function getLanguageCode()
+    {
+        return get_pref('language_ui', TEXTPATTERN_DEFAULT_LANG);
     }
 
     /**

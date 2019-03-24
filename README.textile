@@ -25,9 +25,9 @@ h2. Changelog
 
 h3. Version 0.2.0 - upcoming
 
-* Fixed: Textpattern 4.6.x compatibility.
-* Added: Pref panel layout fits better Textpattern 4.6.0 panes.
-* Now requires Textpattern 4.6.0 or newer.
+* Fixed: Textpattern 4.7.x compatibility.
+* Added: Pref panel layout fits better Textpattern 4.7.0 panes.
+* Now requires Textpattern 4.7.0 or newer.
 
 h3. Version 0.1.1 - 2015/03/04
 
