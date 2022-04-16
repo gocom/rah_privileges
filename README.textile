@@ -4,6 +4,8 @@ h1. rah_privileges
 
 Configure admin-side user-group permissions from "Textpattern CMS'":https://textpattern.com preferences panel.
 
+"!https://raw.githubusercontent.com/gocom/rah_privileges/screenshots/images/preferences.png!":https://raw.githubusercontent.com/gocom/rah_privileges/screenshots/images/preferences.png
+
 h2. Install
 
 Using "Composer":https://getcomposer.org:
@@ -16,6 +18,12 @@ h2. Requirements
 
 * Textpattern 4.7.0 or newer.
 * PHP 7.2.0 or newer.
+
+h2. Usage
+
+Privileges can be configured in Textpattern admin at *Admin* / *Preferences* and from the page *Privileges* section. From there you can set which user groups have access to which different resources.
+
+Also resources added by plugins can be modified, as long as rah_privileges is set to load after the plugin that is adding the resource, and the plugin adds the resource during its initial initialization and not dynamically later on.
 
 h2. Toolshed notice
 
