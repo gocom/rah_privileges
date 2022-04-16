@@ -25,10 +25,6 @@ Privileges can be configured in Textpattern admin at *Admin* / *Preferences* and
 
 Resources added by other plugins can also be modified, as long as rah_privileges is set to load after the plugin that is adding the resource, and the plugin adds the resource during its initial initialization and not dynamically later on during its runtime.
 
-h2. Toolshed notice
-
-This is a toolshed project. Experimental and not part of the main supported product line of Rah.
-
 h2. Changelog
 
 h3. Version 0.3.0 - 2022/04/16
