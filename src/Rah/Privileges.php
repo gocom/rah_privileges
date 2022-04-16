@@ -4,7 +4,7 @@
  * rah_privileges - Configure admin-side privileges
  * https://github.com/gocom/rah_privileges
  *
- * Copyright (C) 2019 Jukka Svahn
+ * Copyright (C) 2022 Jukka Svahn
  *
  * This file is part of rah_privileges.
  *
@@ -29,6 +29,13 @@
 final class Rah_Privileges
 {
     /**
+     * Preference fields.
+     *
+     * @var array|null
+     */
+    private $fields = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -36,8 +43,8 @@ final class Rah_Privileges
         global $event;
 
         add_privs('prefs.rah_privs', '1');
-        register_callback(array($this, 'uninstall'), 'plugin_lifecycle.rah_privileges', 'deleted');
-        register_callback(array($this, 'addLocalization'), 'prefs', '', 1);
+        register_callback([$this, 'uninstall'], 'plugin_lifecycle.rah_privileges', 'deleted');
+        register_callback([$this, 'addLocalization'], 'prefs', '', 1);
 
         if ($event === 'prefs') {
             $this->syncPrefs();
@@ -64,13 +71,12 @@ final class Rah_Privileges
     {
         global $txp_permissions;
 
-        $active = [];
         $strings = [];
 
         // Create a preferences string for every privilege that exists.
-        foreach ($txp_permissions as $resource => $privs) {
-            $name = 'rah_privileges_' . md5($resource);
+        foreach ($this->getFields() as $resource => $name) {
             $strings[$name] = $resource;
+            $privs = $txp_permissions[$resource] ?? '';
 
             // Add panel name infront of the list.
             $privs = do_list($privs);
@@ -80,21 +86,11 @@ final class Rah_Privileges
             if (get_pref($name, false) === false) {
                 set_pref($name, $privs, 'rah_privs', PREF_PLUGIN, 'rah_privileges_input', 80);
             }
-
-            $active[] = $name;
         }
 
         Txp::get('\Textpattern\L10n\Lang')->setPack($strings, true);
 
-        // Remove privileges that no longer exist.
-        if ($active) {
-            $active = implode(',', quote_list((array) $active));
-
-            safe_delete(
-                'txp_prefs',
-                "name like 'rah\_privileges\_%' and name not in({$active})"
-            );
-        }
+        $this->cleanPrefs();
     }
 
     /**
@@ -105,10 +101,19 @@ final class Rah_Privileges
         // Load user group labels.
         $strings = Txp::get('\Textpattern\L10n\Lang')->extract($this->getLanguageCode(), 'admin');
 
+        $fields = $this->getFields();
+
         foreach (areas() as $area => $events) {
             foreach ($events as $title => $resource) {
-                $name = 'rah_privileges_' . md5($resource);
-                $strings[$name] = $title;
+                $name = $fields[$resource] ?? null;
+
+                if ($name) {
+                    $strings[$name] = \sprintf(
+                        '%s<br/><small>%s</small>',
+                        $title,
+                        $resource
+                    );
+                }
             }
         }
 
@@ -122,18 +127,9 @@ final class Rah_Privileges
      */
     private function sort()
     {
-        $resources = [];
-
-        foreach (Txp::get('\Textpattern\L10n\Lang')->getStrings() as $name => $string) {
-            if (strpos($name, 'rah_privileges_') === 0) {
-                $resources[$name] = $string;
-            }
-        }
-
         $index = 1;
-        asort($resources);
 
-        foreach ($resources as $name => $resource) {
+        foreach ($this->getFields() as $resource => $name) {
             update_pref($name, null, null, null, null, $index++);
         }
     }
@@ -173,6 +169,46 @@ final class Rah_Privileges
             } else {
                 $txp_permissions[$resource] = $groups;
             }
+        }
+    }
+
+    /**
+     * Gets fields.
+     *
+     * @return array<string, string>
+     */
+    private function getFields(): array
+    {
+        global $txp_permissions;
+
+        if ($this->fields === null) {
+            $this->fields = [];
+
+            foreach ($txp_permissions as $resource => $privs) {
+                $this->fields[$resource] = 'rah_privileges_' . md5($resource);
+            }
+
+            ksort($this->fields);
+        }
+
+        return $this->fields;
+    }
+
+    /**
+     * Clean preferences.
+     */
+    private function cleanPrefs()
+    {
+        $active = $this->getFields();
+
+        // Remove privileges that no longer exist.
+        if ($active) {
+            $active = implode(',', quote_list((array) $active));
+
+            safe_delete(
+                'txp_prefs',
+                "name like 'rah\_privileges\_%' and name not in({$active})"
+            );
         }
     }
 }

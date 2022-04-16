@@ -15,13 +15,18 @@ Or "download":https://github.com/gocom/rah_privileges/releases an installer pack
 h2. Requirements
 
 * Textpattern 4.7.0 or newer.
-* PHP 5.6.0 or newer.
+* PHP 7.2.0 or newer.
 
 h2. Toolshed notice
 
 This is a toolshed project. Experimental and not part of the main supported product line of Rah.
 
 h2. Changelog
+
+h3. Version 0.3.0 - 2022/04/16
+
+* Added: Admin UI shows resource codes in addition to labels.
+* Now requires PHP 7.2.0 or newer.
 
 h3. Version 0.2.0 - 2019/03/24
 
