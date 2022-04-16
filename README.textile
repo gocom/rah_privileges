@@ -1,6 +1,6 @@
 h1. rah_privileges
 
-"Packagist":https://packagist.org/packages/rah/rah_privileges | "Donate":https://rahforum.biz/donate/rah_privileges
+"Download":https://github.com/gocom/rah_privileges/releases | "Issues":https://github.com/gocom/rah_privileges/issues | "Packagist":https://packagist.org/packages/rah/rah_privileges
 
 Configure admin-side user-group permissions from "Textpattern CMS'":https://textpattern.com preferences panel.
 
@@ -9,6 +9,8 @@ h2. Install
 Using "Composer":https://getcomposer.org:
 
 bc. $ composer require rah/rah_privileges
+
+Or "download":https://github.com/gocom/rah_privileges/releases an installer package.
 
 h2. Requirements
 
